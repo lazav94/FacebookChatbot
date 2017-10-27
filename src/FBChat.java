@@ -166,20 +166,18 @@ public class FBChat extends HttpServlet {
 			String reminderChoice = mItem.getMessage().getText();
 			switch (reminderChoice) {
 			case "3 times a day":
-				SendMessage(recipient, new Message("Noted 🙂"));
 				break;
 			case "Twice a day":
-				SendMessage(recipient, new Message("Noted 🙂"));
 				break;
 			case "Once a day":
-				SendMessage(recipient, new Message("Noted 🙂"));
 				break;
 			case "Stop reminder":
-				SendMessage(recipient, new Message("Noted 🙂"));
 				break;
 			default:
 				break;
 			}
+			
+			SendMessage(recipient, new Message("Noted 🙂"));
 			SendMessage(recipient, QuickReplayMessageNoted());
 			
 			state = State.END;
@@ -234,7 +232,7 @@ public class FBChat extends HttpServlet {
 	private Message QuickReplayMessageNoted() {
 		Message msg = new Message("Let's give it a try now, drink 1 cup of water and press the button");
 		List<QuickReply> list = new ArrayList<>();
-		list.add(new QuickReply("Done", "Done"));
+		list.add(new QuickReply("Done", "1"));
 		msg.addQuickReplies(list);
 		return msg;
 	}
