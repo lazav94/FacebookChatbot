@@ -45,15 +45,15 @@ public class FBChat extends HttpServlet {
 	private String accessToken = "EAAOnZC3VWYUUBAFkD1NQ8vlgjr8niWRFZAIExAg9THb50btvBGjh9tLllccxk63DCSieswPxpiUbQbBvHZAfksylMaZAn7y6S8z29nWXgVtmpkZCVp0rA3FHHZALZAJKjZCuVNNFhLcksfjHAimBZCBp2brVaqSGCIWQzEoZCYjvFsOQZDZD";
 	private String verifyToken = "zmajToken";
 
-	String welcomeString = "☑  Daily water reminders\n☑  Personalized AI recommendations\n☑  Number of cups of water drank this week\n☑  Tips about water drinking";
+	// hardcoded string
 
+	String welcomeString = "☑  Daily water reminders\n☑  Personalized AI recommendations\n☑  Number of cups of water drank this week\n☑  Tips about water drinking";
 	String recommentCups = "Recommended amount of water per day is eight 8-ounce glasses, equals to about 2 liters, or half a gallon.";
 	String champ = "Your'e a real champ 🥂 8 cups is the recommended amount";
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		System.out.println("DO GET");
 		String hubToken = request.getParameter("hub.verify_token");
 		String hubChallange = request.getParameter("hub.challenge");
 
@@ -70,7 +70,6 @@ public class FBChat extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		String choice = "";
 		StringBuffer sb = new StringBuffer();
 		BufferedReader br = request.getReader();
 		String line = "";
@@ -97,6 +96,12 @@ public class FBChat extends HttpServlet {
 		}
 	}
 
+	private void SendMessage(IdMessageRecipient recipient, Message message) {
+		FacebookClient pageClient = new DefaultFacebookClient(accessToken, Version.VERSION_2_6);
+		pageClient.publish("me/messages", SendResponse.class, Parameter.with("recipient", recipient),
+				Parameter.with("message", message));
+	}
+
 	private String getFirstName(IdMessageRecipient recipient) {
 		FacebookClient fbClient = new DefaultFacebookClient(accessToken, Version.VERSION_2_6);
 		User user = fbClient.fetchObject(recipient.getId().toString(), User.class);
@@ -108,7 +113,6 @@ public class FBChat extends HttpServlet {
 		case BEGIN:
 
 			String hiMessage = "Hi " + getFirstName(recipient) + "! I am your personal water trainer 🙂";
-
 			SendMessage(recipient, new Message(hiMessage));
 			SendMessage(recipient, QuickReplayMessage());
 
@@ -123,9 +127,8 @@ public class FBChat extends HttpServlet {
 			break;
 		case CHOICE:
 
-			String choice = mItem.getMessage().getText();
-			switch (choice) {
-
+			String cupChoice = mItem.getMessage().getText();
+			switch (cupChoice) {
 			case "1-2 cups":
 				SendMessage(recipient,
 						createImageMessage("http://www.makesafetyfun.com/wp-content/uploads/2016/04/oh-no.jpg"));
@@ -154,6 +157,7 @@ public class FBChat extends HttpServlet {
 
 			}
 			SendMessage(recipient, QuickReplayMessageReminders());
+			
 			state = State.REMINDERS;
 			break;
 		case REMINDERS:
@@ -177,6 +181,7 @@ public class FBChat extends HttpServlet {
 				break;
 			}
 			SendMessage(recipient, QuickReplayMessageNoted());
+			
 			state = State.END;
 		case END:
 			// FIXME
@@ -189,13 +194,6 @@ public class FBChat extends HttpServlet {
 			break;
 
 		}
-	}
-
-	private void SendMessage(IdMessageRecipient recipient, Message message) {
-		FacebookClient pageClient = new DefaultFacebookClient(accessToken, Version.VERSION_2_6);
-
-		SendResponse resp = pageClient.publish("me/messages", SendResponse.class,
-				Parameter.with("recipient", recipient), Parameter.with("message", message));
 	}
 
 	private Message QuickReplayMessage() {
