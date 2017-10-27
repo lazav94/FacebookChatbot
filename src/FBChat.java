@@ -180,7 +180,10 @@ public class FBChat extends HttpServlet {
 			SendMessage(recipient, new Message("Noted 🙂"));
 			SendMessage(recipient, QuickReplayMessageNoted());
 			
+			state = State.IDLE;
+		case IDLE:
 			state = State.END;
+			break;
 		case END:
 			// FIXME
 			SendMessage(recipient, createImageMessage(
@@ -230,6 +233,7 @@ public class FBChat extends HttpServlet {
 	}
 
 	private Message QuickReplayMessageNoted() {
+		
 		Message msg = new Message("Let's give it a try now, drink 1 cup of water and press the button");
 		List<QuickReply> list = new ArrayList<>();
 		list.add(new QuickReply("Done", "1"));

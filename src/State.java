@@ -4,5 +4,6 @@ public enum State {
 	AFTER_START,
 	CHOICE,
 	REMINDERS,
+	IDLE,
 	END,
 }
