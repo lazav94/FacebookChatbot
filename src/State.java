@@ -1,0 +1,4 @@
+
+public enum State {
+	BEGIN, AFTER_START, REMINDERS, END, CHOICE
+}
