@@ -94,7 +94,7 @@ public class FBChat extends HttpServlet {
 		}
 	}
 
-	 void SendMessage(IdMessageRecipient recipient, Message message) {
+	private void SendMessage(IdMessageRecipient recipient, Message message) {
 		FacebookClient pageClient = new DefaultFacebookClient(accessToken, Version.VERSION_2_6);
 		pageClient.publish("me/messages", SendResponse.class, Parameter.with("recipient", recipient),
 				Parameter.with("message", message));
