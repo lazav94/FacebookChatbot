@@ -188,7 +188,7 @@ public class FBChat extends HttpServlet {
 			// FIXME
 			SendMessage(recipient, createImageMessage(
 					"http://3.bp.blogspot.com/_4jg1jp938Vw/TQ7f-MTi3qI/AAAAAAAAACA/fQy4Cg2lx3c/S1600-R/homerwoohoo_large.jpg"));
-			SendMessage(recipient, new Message("Well done Lazar! Keep it up!"));
+			SendMessage(recipient, new Message("Well done " +  getFirstName(recipient) +"! Keep it up!"));
 			SendMessage(recipient,
 					new Message("You can always get to the menu by asking for \"Menu\" 🙂 (not implemented yet)"));
 			state = State.BEGIN;
