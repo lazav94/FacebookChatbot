@@ -113,7 +113,7 @@ public class FBChat extends HttpServlet {
 		IdMessageRecipient recipient = new IdMessageRecipient(mItem.getSender().getId());
 
 		String text = mItem.getMessage().getText();
-		if(text.contains("\"is_echo\":true")){
+		if(!text.contains("\"is_echo\":true")){
 			System.out.println("DFDSFKLSDJFKLJSDLKFJKLSDJFKLSDJFKLJSDKFLSDKLFKSLDFJKL");
 			return;
 		}
@@ -121,7 +121,7 @@ public class FBChat extends HttpServlet {
 		String recipientID = mItem.getSender().getId();
 		// New user!
 		if (stateMap.get(recipientID) == null) {
-			System.out.println("WHYY----------------------------------------------");
+			System.out.println("New user: " + recipientID);
 			stateMap.put(recipientID, State.BEGIN);
 		}
 
