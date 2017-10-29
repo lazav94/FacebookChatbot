@@ -2,7 +2,9 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -40,7 +42,8 @@ import com.restfb.types.webhook.messaging.MessagingItem;
 @WebServlet("/Webhook")
 public class FBChat extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private State state = State.BEGIN;
+
+	private static Map<String, State> stateMap = new HashMap<>();
 
 	private static String accessToken = "EAAOnZC3VWYUUBAFkD1NQ8vlgjr8niWRFZAIExAg9THb50btvBGjh9tLllccxk63DCSieswPxpiUbQbBvHZAfksylMaZAn7y6S8z29nWXgVtmpkZCVp0rA3FHHZALZAJKjZCuVNNFhLcksfjHAimBZCBp2brVaqSGCIWQzEoZCYjvFsOQZDZD";
 	private String verifyToken = "zmajToken";
@@ -113,6 +116,15 @@ public class FBChat extends HttpServlet {
 		if(text.contains("isEcho=true"))
 			return;
 		
+		String recipientID = mItem.getSender().getId();
+		// New user!
+		if (stateMap.get(recipientID) == null) {
+			System.out.println("WHYY----------------------------------------------");
+			stateMap.put(recipientID, State.BEGIN);
+		}
+
+		State state = stateMap.remove(recipientID);
+		
 		switch (state) {
 		case BEGIN:
 
@@ -120,14 +132,14 @@ public class FBChat extends HttpServlet {
 			SendMessage(recipient, new Message(hiMessage));
 			SendMessage(recipient, QuickReplayMessage());
 
-			state = State.AFTER_START;
+			stateMap.put(recipientID, State.AFTER_START);
 			break;
 		case AFTER_START:
 
 			SendMessage(recipient, new Message("Before we begin..."));
 			SendMessage(recipient, QuickReplayMessageCups());
 
-			state = State.CHOICE;
+			stateMap.put(recipientID, State.CHOICE);
 			break;
 		case CHOICE:
 
@@ -162,7 +174,7 @@ public class FBChat extends HttpServlet {
 			}
 			SendMessage(recipient, QuickReplayMessageReminders(recipient));
 
-			state = State.REMINDERS;
+			stateMap.put(recipientID, State.REMINDERS);
 			break;
 		case REMINDERS:
 
@@ -187,9 +199,9 @@ public class FBChat extends HttpServlet {
 			SendMessage(recipient, new Message("Noted 🙂"));
 			SendMessage(recipient, QuickReplayMessageNoted());
 
-			state = State.IDLE;
+			stateMap.put(recipientID, State.IDLE);
 		case IDLE:
-			state = State.END;
+			stateMap.put(recipientID, State.END);
 			break;
 		case END:
 			// FIXME
