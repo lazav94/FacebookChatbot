@@ -40,24 +40,23 @@ public class ReminderListener implements ServletContextListener {
 			throw new RuntimeException("Recipient doesn't excist, so can't be changed");
 	}
 
-	
-	public static boolean haveReminder(IdMessageRecipient recipient){
+	public static boolean haveReminder(IdMessageRecipient recipient) {
 		return map.containsKey(recipient);
 	}
+
 	public void contextInitialized(ServletContextEvent arg0) {
 		ServletContext servletContext = arg0.getServletContext();
 		System.out.println("*********Remider started*********");
 
 		int delay = 1000;
 		Timer timer = new Timer();
+		
 		// final Calendar calendar = Calendar.getInstance();
 		// System.out.println("Tweet at Time = " + calendar.getTime());
 		// calendar.add(Calendar.SECOND, -60);
+		
 		timer.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
-
-				
-				
 
 				for (Map.Entry<IdMessageRecipient, ReminderType> entry : map.entrySet()) {
 					if (entry.getValue() == ReminderType.ONCE_A_DAY) {
@@ -71,25 +70,27 @@ public class ReminderListener implements ServletContextListener {
 					} else {
 						FBChat.SendMessage(entry.getKey(), new Message("Hi, drink water!"));
 					}
+					FBChat.SendMessage(entry.getKey(),
+							FBChat.createImageMessage("https://media.giphy.com/media/Fx85ye9hVe2vS/giphy.gif"));
+
 				}
 
-				NUMBER_TIMER_RUN = (NUMBER_TIMER_RUN + 1 ) % 3;
-				
-			}// End of Run
-		}, delay, 60000);
+				NUMBER_TIMER_RUN = (NUMBER_TIMER_RUN + 1) % 3;
+
+			}
+		}, delay, 86400000);
 		servletContext.setAttribute("timer", timer);
 	}
 
 	public void contextDestroyed(ServletContextEvent arg0) {
 		ServletContext servletContext = arg0.getServletContext();
-		// get our timer from the Context
 		Timer timer = (Timer) servletContext.getAttribute("timer");
 
 		// cancel all pending tasks in the timers queue
 		if (timer != null)
 			timer.cancel();
 
-		// remove the timer from the servlet context
+		// Remove the timer from the servlet context
 		servletContext.removeAttribute("timer");
 		System.out.println("Reminder destroyed");
 

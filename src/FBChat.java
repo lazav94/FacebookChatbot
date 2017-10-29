@@ -2,7 +2,9 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -40,32 +42,17 @@ import com.restfb.types.webhook.messaging.MessagingItem;
 @WebServlet("/Webhook")
 public class FBChat extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private State state = State.BEGIN;
+
+	private static Map<String, State> stateMap = new HashMap<>();
 
 	private static String accessToken = "EAAOnZC3VWYUUBAFkD1NQ8vlgjr8niWRFZAIExAg9THb50btvBGjh9tLllccxk63DCSieswPxpiUbQbBvHZAfksylMaZAn7y6S8z29nWXgVtmpkZCVp0rA3FHHZALZAJKjZCuVNNFhLcksfjHAimBZCBp2brVaqSGCIWQzEoZCYjvFsOQZDZD";
-	private String verifyToken = "zmajToken";
+	private static String verifyToken = "zmajToken";
 
 	// hardcoded string
 
-	String welcomeString = "☑  Daily water reminders\n☑  Personalized AI recommendations\n☑  Number of cups of water drank this week\n☑  Tips about water drinking";
+	static String welcomeString = "☑  Daily water reminders\n☑  Personalized AI recommendations\n☑  Number of cups of water drank this week\n☑  Tips about water drinking";
 	String recommentCups = "Recommended amount of water per day is eight 8-ounce glasses, equals to about 2 liters, or half a gallon.";
 	String champ = "Your'e a real champ 🥂 8 cups is the recommended amount";
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-
-		String hubToken = request.getParameter("hub.verify_token");
-		String hubChallange = request.getParameter("hub.challenge");
-
-		if (hubToken != null && verifyToken.equals(hubToken)) {
-			response.getWriter().write(hubChallange);
-			response.getWriter().flush();
-			response.getWriter().close();
-		} else {
-			response.getWriter().write("incorrect token");
-		}
-
-	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -85,16 +72,15 @@ public class FBChat extends HttpServlet {
 		for (WebhookEntry entry : webhookObj.getEntryList()) {
 			if (entry.getMessaging() != null) {
 				for (MessagingItem mItem : entry.getMessaging()) {
-
 					if (mItem.getMessage() != null && mItem.getMessage().getText() != null) {
-						AI(mItem); 
+						AI(mItem);
 					}
 				}
 			}
 		}
 	}
 
-	static void SendMessage(IdMessageRecipient recipient, Message message) {
+	public static void SendMessage(IdMessageRecipient recipient, Message message) {
 		FacebookClient pageClient = new DefaultFacebookClient(accessToken, Version.VERSION_2_6);
 		pageClient.publish("me/messages", SendResponse.class, Parameter.with("recipient", recipient),
 				Parameter.with("message", message));
@@ -108,7 +94,16 @@ public class FBChat extends HttpServlet {
 
 	private void AI(MessagingItem mItem) {
 		IdMessageRecipient recipient = new IdMessageRecipient(mItem.getSender().getId());
-		
+
+		String recipientID = mItem.getSender().getId();
+		// New user!
+		if (stateMap.get(recipientID) == null) {
+			System.out.println("New user: " + recipientID);
+			stateMap.put(recipientID, State.BEGIN);
+		}
+
+		State state = stateMap.remove(recipientID);
+
 		switch (state) {
 		case BEGIN:
 
@@ -116,14 +111,15 @@ public class FBChat extends HttpServlet {
 			SendMessage(recipient, new Message(hiMessage));
 			SendMessage(recipient, QuickReplayMessage());
 
-			state = State.AFTER_START;
+			stateMap.put(recipientID, State.AFTER_START);
+
 			break;
 		case AFTER_START:
 
 			SendMessage(recipient, new Message("Before we begin..."));
 			SendMessage(recipient, QuickReplayMessageCups());
 
-			state = State.CHOICE;
+			stateMap.put(recipientID, State.CHOICE);
 			break;
 		case CHOICE:
 
@@ -157,11 +153,10 @@ public class FBChat extends HttpServlet {
 
 			}
 			SendMessage(recipient, QuickReplayMessageReminders(recipient));
-			
-			state = State.REMINDERS;
+
+			stateMap.put(recipientID, State.REMINDERS);
 			break;
 		case REMINDERS:
-			// TODO Java reminder + message!
 
 			String reminderChoice = mItem.getMessage().getText();
 			switch (reminderChoice) {
@@ -180,10 +175,10 @@ public class FBChat extends HttpServlet {
 			default:
 				break;
 			}
-			
+
 			SendMessage(recipient, new Message("Noted 🙂"));
 			SendMessage(recipient, QuickReplayMessageNoted());
-			
+
 			state = State.IDLE;
 		case IDLE:
 			state = State.END;
@@ -192,16 +187,18 @@ public class FBChat extends HttpServlet {
 			// FIXME
 			SendMessage(recipient, createImageMessage(
 					"http://3.bp.blogspot.com/_4jg1jp938Vw/TQ7f-MTi3qI/AAAAAAAAACA/fQy4Cg2lx3c/S1600-R/homerwoohoo_large.jpg"));
-			SendMessage(recipient, new Message("Well done " +  getFirstName(recipient) +"! Keep it up!"));
+			SendMessage(recipient, new Message("Well done " + getFirstName(recipient) + "! Keep it up!"));
 			SendMessage(recipient,
 					new Message("You can always get to the menu by asking for \"Menu\" 🙂 (not implemented yet)"));
+
+			stateMap.put(recipientID, State.BEGIN);
 			state = State.BEGIN;
 			break;
 
 		}
 	}
 
-	private Message QuickReplayMessage() {
+	public static Message QuickReplayMessage() {
 
 		Message msg = new Message(welcomeString);
 		List<QuickReply> list = new ArrayList<>();
@@ -211,7 +208,7 @@ public class FBChat extends HttpServlet {
 
 	}
 
-	private Message QuickReplayMessageCups() {
+	public static Message QuickReplayMessageCups() {
 
 		Message msg = new Message("How many cups of water do you drink a day?");
 		List<QuickReply> list = new ArrayList<>();
@@ -224,14 +221,14 @@ public class FBChat extends HttpServlet {
 
 	}
 
-	private Message QuickReplayMessageReminders(IdMessageRecipient recipient) {
+	public static Message QuickReplayMessageReminders(IdMessageRecipient recipient) {
 
 		Message msg = new Message("Choose the frequency for water break reminders");
 		List<QuickReply> list = new ArrayList<>();
 		list.add(new QuickReply("3 times a day", "1"));
 		list.add(new QuickReply("Twice a day", "2"));
 		list.add(new QuickReply("Once a day", "3"));
-		if(ReminderListener.haveReminder(recipient)){
+		if (ReminderListener.haveReminder(recipient)) {
 			list.add(new QuickReply("I don't count", ""));
 		}
 		msg.addQuickReplies(list);
@@ -239,8 +236,8 @@ public class FBChat extends HttpServlet {
 
 	}
 
-	private Message QuickReplayMessageNoted() {
-		
+	public static Message QuickReplayMessageNoted() {
+
 		Message msg = new Message("Let's give it a try now, drink 1 cup of water and press the button");
 		List<QuickReply> list = new ArrayList<>();
 		list.add(new QuickReply("Done", "1"));
@@ -248,7 +245,7 @@ public class FBChat extends HttpServlet {
 		return msg;
 	}
 
-	public Message createImageMessage(String imageUrl) {
+	public static Message createImageMessage(String imageUrl) {
 		MediaAttachment image = new MediaAttachment(MediaAttachment.Type.IMAGE, imageUrl);
 		Message imageMessage = new Message(image);
 		return imageMessage;
@@ -256,7 +253,7 @@ public class FBChat extends HttpServlet {
 
 	/** Code below is for some other features */
 
-	private Message generic2() {
+	public static Message generic2() {
 		GenericTemplatePayload payload = new GenericTemplatePayload();
 
 		Bubble option1 = new Bubble("1");
@@ -285,7 +282,7 @@ public class FBChat extends HttpServlet {
 		return imageMessage;
 	}
 
-	private Message button() {
+	public static Message button() {
 		ButtonTemplatePayload payload = new ButtonTemplatePayload("Button");
 
 		// build a button that sends a postback
@@ -299,7 +296,7 @@ public class FBChat extends HttpServlet {
 		return imageMessage;
 	}
 
-	private Message generic() {
+	public static Message generic() {
 		GenericTemplatePayload payload = new GenericTemplatePayload();
 
 		Bubble option1 = new Bubble("1-2 cups");
@@ -321,7 +318,7 @@ public class FBChat extends HttpServlet {
 		return imageMessage;
 	}
 
-	private Message list() {
+	public static Message list() {
 
 		PostbackButton postbackButton1 = new PostbackButton("Let's start", "Before we begin..");
 		PostbackButton postbackButton2 = new PostbackButton("Let's start", "Before we begin..");
