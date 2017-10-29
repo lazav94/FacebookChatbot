@@ -78,7 +78,7 @@ public class ReminderListener implements ServletContextListener {
 				NUMBER_TIMER_RUN = (NUMBER_TIMER_RUN + 1) % 3;
 
 			}
-		}, delay, 86400000);
+		}, delay, 60000);
 		servletContext.setAttribute("timer", timer);
 	}
 
