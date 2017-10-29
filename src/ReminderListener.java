@@ -11,34 +11,34 @@ import com.restfb.types.send.IdMessageRecipient;
 import com.restfb.types.send.Message;
 
 public class ReminderListener implements ServletContextListener {
-	
-	private static Map<IdMessageRecipient, ReminderType> map = new HashMap<>();
-	private static int NUMBER_TIMER_RUN = 0;
-	
-	
 
-	public void add(IdMessageRecipient recipient, ReminderType type) {
+	public static Map<IdMessageRecipient, ReminderType> map = new HashMap<>();
+	private static int NUMBER_TIMER_RUN = 0;
+
+	public static void add(IdMessageRecipient recipient, ReminderType type) {
+		System.out.println("Reminder add");
 		if (map.get(recipient) == null)
 			map.put(recipient, type);
 		else
 			change(recipient, type);
 	}
 
-	public void delete(IdMessageRecipient recipient) {
+	public static void delete(IdMessageRecipient recipient) {
+		System.out.println("Reminder delete");
 		if (map.get(recipient) != null)
 			map.remove(recipient);
 		else
 			throw new RuntimeException("Recipient doesn't excist, so can't be deleted");
 	}
 
-	public void change(IdMessageRecipient recipient, ReminderType type) {
+	public static void change(IdMessageRecipient recipient, ReminderType type) {
+		System.out.println("Reminder change");
 		if (map.get(recipient) != null) {
 			map.remove(recipient);
 			map.put(recipient, type);
 		} else
 			throw new RuntimeException("Recipient doesn't excist, so can't be changed");
 	}
-	
 
 	public void contextInitialized(ServletContextEvent arg0) {
 		ServletContext servletContext = arg0.getServletContext();
@@ -52,19 +52,20 @@ public class ReminderListener implements ServletContextListener {
 		timer.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
 
-				FBChat fb = new FBChat();
+				
+				
 
 				for (Map.Entry<IdMessageRecipient, ReminderType> entry : map.entrySet()) {
 					if (entry.getValue() == ReminderType.ONCE_A_DAY) {
 						if (NUMBER_TIMER_RUN == 0) {
-							fb.SendMessage(entry.getKey(), new Message("Good morning, drink water!"));
+							FBChat.SendMessage(entry.getKey(), new Message("Good morning, drink water!"));
 						}
 					} else if (entry.getValue() == ReminderType.TWICE_A_DAY) {
 						if (NUMBER_TIMER_RUN != 2) {
-							fb.SendMessage(entry.getKey(), new Message("drink water!"));
+							FBChat.SendMessage(entry.getKey(), new Message("drink water!"));
 						}
 					} else {
-						fb.SendMessage(entry.getKey(), new Message("Hi, drink water!"));
+						FBChat.SendMessage(entry.getKey(), new Message("Hi, drink water!"));
 					}
 				}
 

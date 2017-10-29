@@ -42,7 +42,7 @@ public class FBChat extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private State state = State.BEGIN;
 
-	private String accessToken = "EAAOnZC3VWYUUBAFkD1NQ8vlgjr8niWRFZAIExAg9THb50btvBGjh9tLllccxk63DCSieswPxpiUbQbBvHZAfksylMaZAn7y6S8z29nWXgVtmpkZCVp0rA3FHHZALZAJKjZCuVNNFhLcksfjHAimBZCBp2brVaqSGCIWQzEoZCYjvFsOQZDZD";
+	private static String accessToken = "EAAOnZC3VWYUUBAFkD1NQ8vlgjr8niWRFZAIExAg9THb50btvBGjh9tLllccxk63DCSieswPxpiUbQbBvHZAfksylMaZAn7y6S8z29nWXgVtmpkZCVp0rA3FHHZALZAJKjZCuVNNFhLcksfjHAimBZCBp2brVaqSGCIWQzEoZCYjvFsOQZDZD";
 	private String verifyToken = "zmajToken";
 
 	// hardcoded string
@@ -94,7 +94,7 @@ public class FBChat extends HttpServlet {
 		}
 	}
 
-	 void SendMessage(IdMessageRecipient recipient, Message message) {
+	static void SendMessage(IdMessageRecipient recipient, Message message) {
 		FacebookClient pageClient = new DefaultFacebookClient(accessToken, Version.VERSION_2_6);
 		pageClient.publish("me/messages", SendResponse.class, Parameter.with("recipient", recipient),
 				Parameter.with("message", message));
@@ -166,12 +166,16 @@ public class FBChat extends HttpServlet {
 			String reminderChoice = mItem.getMessage().getText();
 			switch (reminderChoice) {
 			case "3 times a day":
+				ReminderListener.add(recipient, ReminderType.TRICE_A_DAY);
 				break;
 			case "Twice a day":
+				ReminderListener.add(recipient, ReminderType.TWICE_A_DAY);
 				break;
 			case "Once a day":
+				ReminderListener.add(recipient, ReminderType.ONCE_A_DAY);
 				break;
 			case "Stop reminder":
+				ReminderListener.delete(recipient);
 				break;
 			default:
 				break;
