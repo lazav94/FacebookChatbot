@@ -113,8 +113,10 @@ public class FBChat extends HttpServlet {
 		IdMessageRecipient recipient = new IdMessageRecipient(mItem.getSender().getId());
 
 		String text = mItem.getMessage().getText();
-		if(text.contains("isEcho=true"))
+		if(text.contains("isEcho=true")){
+			System.out.println("DFDSFKLSDJFKLJSDLKFJKLSDJFKLSDJFKLJSDKFLSDKLFKSLDFJKL");
 			return;
+		}
 		
 		String recipientID = mItem.getSender().getId();
 		// New user!
