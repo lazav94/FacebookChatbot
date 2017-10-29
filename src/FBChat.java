@@ -113,7 +113,7 @@ public class FBChat extends HttpServlet {
 		IdMessageRecipient recipient = new IdMessageRecipient(mItem.getSender().getId());
 
 		String text = mItem.getMessage().getText();
-		if(!text.contains("\"is_echo\":true")){
+		if(text.contains("\"is_echo\":true")){
 			System.out.println("DFDSFKLSDJFKLJSDLKFJKLSDJFKLSDJFKLJSDKFLSDKLFKSLDFJKL");
 			return;
 		}
