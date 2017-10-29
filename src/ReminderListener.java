@@ -40,6 +40,10 @@ public class ReminderListener implements ServletContextListener {
 			throw new RuntimeException("Recipient doesn't excist, so can't be changed");
 	}
 
+	
+	public static boolean haveReminder(IdMessageRecipient recipient){
+		return map.containsKey(recipient);
+	}
 	public void contextInitialized(ServletContextEvent arg0) {
 		ServletContext servletContext = arg0.getServletContext();
 		System.out.println("*********Remider started*********");

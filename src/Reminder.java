@@ -38,6 +38,8 @@ public class Reminder {
 		} else
 			throw new RuntimeException("Recipient doesn't excist, so can't be changed");
 	}
+	
+
 
 	public void timerRunning() {
 		// every night at 2am you run your task + 8 + 16

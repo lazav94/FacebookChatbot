@@ -156,7 +156,7 @@ public class FBChat extends HttpServlet {
 				break;
 
 			}
-			SendMessage(recipient, QuickReplayMessageReminders());
+			SendMessage(recipient, QuickReplayMessageReminders(recipient));
 			
 			state = State.REMINDERS;
 			break;
@@ -224,13 +224,16 @@ public class FBChat extends HttpServlet {
 
 	}
 
-	private Message QuickReplayMessageReminders() {
+	private Message QuickReplayMessageReminders(IdMessageRecipient recipient) {
 
 		Message msg = new Message("Choose the frequency for water break reminders");
 		List<QuickReply> list = new ArrayList<>();
 		list.add(new QuickReply("3 times a day", "1"));
 		list.add(new QuickReply("Twice a day", "2"));
 		list.add(new QuickReply("Once a day", "3"));
+		if(ReminderListener.haveReminder(recipient)){
+			list.add(new QuickReply("I don't count", ""));
+		}
 		msg.addQuickReplies(list);
 		return msg;
 
