@@ -45,11 +45,11 @@ public class FBChat extends HttpServlet {
 	private static String accessToken = "EAAOnZC3VWYUUBAFkD1NQ8vlgjr8niWRFZAIExAg9THb50btvBGjh9tLllccxk63DCSieswPxpiUbQbBvHZAfksylMaZAn7y6S8z29nWXgVtmpkZCVp0rA3FHHZALZAJKjZCuVNNFhLcksfjHAimBZCBp2brVaqSGCIWQzEoZCYjvFsOQZDZD";
 	private String verifyToken = "zmajToken";
 
-	static // hardcoded string
+	
 
-	String welcomeString = "☑  Daily water reminders\n☑  Personalized AI recommendations\n☑  Number of cups of water drank this week\n☑  Tips about water drinking";
-	String recommentCups = "Recommended amount of water per day is eight 8-ounce glasses, equals to about 2 liters, or half a gallon.";
-	String champ = "Your'e a real champ 🥂 8 cups is the recommended amount";
+	static String welcomeString = "☑  Daily water reminders\n☑  Personalized AI recommendations\n☑  Number of cups of water drank this week\n☑  Tips about water drinking";
+	static String recommentCups = "Recommended amount of water per day is eight 8-ounce glasses, equals to about 2 liters, or half a gallon.";
+	static String champ = "Your'e a real champ 🥂 8 cups is the recommended amount";
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -109,6 +109,10 @@ public class FBChat extends HttpServlet {
 	public void AI(MessagingItem mItem) {
 		IdMessageRecipient recipient = new IdMessageRecipient(mItem.getSender().getId());
 
+		String text = mItem.getMessage().getText();
+		if(text.contains("isEcho=true"))
+			return;
+		
 		switch (state) {
 		case BEGIN:
 
