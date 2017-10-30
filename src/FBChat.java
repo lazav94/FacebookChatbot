@@ -121,6 +121,10 @@ public class FBChat extends HttpServlet {
 			stateMap.put(recipientID, State.BEGIN);
 		}
 		
+		if(mItem.getPostback() != null)
+			System.out.println("JDFKSLJFKL + " +  mItem.getPostback().getPayload());
+			
+		
 
 		State state = stateMap.remove(recipientID);
 		

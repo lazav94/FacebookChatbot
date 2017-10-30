@@ -50,35 +50,37 @@ public class ReminderListener implements ServletContextListener {
 
 		int delay = 1000;
 		Timer timer = new Timer();
-		
+
 		// final Calendar calendar = Calendar.getInstance();
 		// System.out.println("Tweet at Time = " + calendar.getTime());
 		// calendar.add(Calendar.SECOND, -60);
-		
+
 		timer.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
 
 				for (Map.Entry<IdMessageRecipient, ReminderType> entry : map.entrySet()) {
 					if (entry.getValue() == ReminderType.ONCE_A_DAY) {
 						if (NUMBER_TIMER_RUN == 0) {
-							FBChat.SendMessage(entry.getKey(), new Message("Good morning, drink water!"));
+							FBChat.SendMessage(entry.getKey(), new Message("Hello, please drink water!"));
+							FBChat.SendMessage(entry.getKey(),
+									FBChat.createImageMessage("https://media.giphy.com/media/Fx85ye9hVe2vS/giphy.gif"));
 						}
 					} else if (entry.getValue() == ReminderType.TWICE_A_DAY) {
 						if (NUMBER_TIMER_RUN != 2) {
-							FBChat.SendMessage(entry.getKey(), new Message("drink water!"));
+							FBChat.SendMessage(entry.getKey(), new Message("Drink water, please!"));
+							FBChat.SendMessage(entry.getKey(),
+									FBChat.createImageMessage("https://media.giphy.com/media/Fx85ye9hVe2vS/giphy.gif"));
 						}
 					} else {
 						FBChat.SendMessage(entry.getKey(), new Message("Hi, drink water!"));
+						FBChat.SendMessage(entry.getKey(),
+								FBChat.createImageMessage("https://media.giphy.com/media/Fx85ye9hVe2vS/giphy.gif"));
 					}
-					FBChat.SendMessage(entry.getKey(),
-							FBChat.createImageMessage("https://media.giphy.com/media/Fx85ye9hVe2vS/giphy.gif"));
 
 				}
-
 				NUMBER_TIMER_RUN = (NUMBER_TIMER_RUN + 1) % 3;
-
 			}
-		}, delay, 60000);
+		}, delay, 120000);
 		servletContext.setAttribute("timer", timer);
 	}
 
