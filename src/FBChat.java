@@ -87,13 +87,9 @@ public class FBChat extends HttpServlet {
 		WebhookObject webhookObj = mapper.toJavaObject(sb.toString(), WebhookObject.class);
 
 		for (WebhookEntry entry : webhookObj.getEntryList()) {
-			System.out.println("1");
 			if (entry.getMessaging() != null) {
-				System.out.println("2");
 				for (MessagingItem mItem : entry.getMessaging()) {
-					System.out.println("3");
 					if (mItem.getMessage() != null && mItem.getMessage().getText() != null) {
-						System.out.println("4");
 						if(mItem.getPostback() != null){
 							System.out.println("JDFKSLJFKL + " +  mItem.getPostback().getPayload());
 							stateMap.put(mItem.getSender().getId(), State.BEGIN);
