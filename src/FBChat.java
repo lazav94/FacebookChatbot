@@ -91,6 +91,11 @@ public class FBChat extends HttpServlet {
 				for (MessagingItem mItem : entry.getMessaging()) {
 
 					if (mItem.getMessage() != null && mItem.getMessage().getText() != null) {
+						if(mItem.getPostback() != null){
+							System.out.println("JDFKSLJFKL + " +  mItem.getPostback().getPayload());
+							stateMap.put(mItem.getSender().getId(), State.BEGIN);
+						}
+							
 						AI(mItem);
 					}
 				}
@@ -120,11 +125,6 @@ public class FBChat extends HttpServlet {
 			System.out.println("New user: " + recipientID );
 			stateMap.put(recipientID, State.BEGIN);
 		}
-		
-		if(mItem.getPostback() != null)
-			System.out.println("JDFKSLJFKL + " +  mItem.getPostback().getPayload());
-			
-		
 
 		State state = stateMap.remove(recipientID);
 		
