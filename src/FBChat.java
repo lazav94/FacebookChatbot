@@ -125,6 +125,7 @@ public class FBChat extends HttpServlet {
 		if (stateMap.get(recipientID) == null) {
 			System.out.println("New user: " + recipientID );
 			stateMap.put(recipientID, State.BEGIN);
+			return;
 		}
 		
 
