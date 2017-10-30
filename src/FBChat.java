@@ -81,6 +81,11 @@ public class FBChat extends HttpServlet {
 		}
 
 		System.out.println("POST line: " + sb);
+		
+		if(sb.toString().contains("is_echo")){
+			System.out.println("It's ECHOOOoooooooooO" );
+			return;
+		}
 
 		JsonMapper mapper = new DefaultJsonMapper();
 		WebhookObject webhookObj = mapper.toJavaObject(sb.toString(), WebhookObject.class);
@@ -113,15 +118,10 @@ public class FBChat extends HttpServlet {
 		IdMessageRecipient recipient = new IdMessageRecipient(mItem.getSender().getId());
 
 		String text = mItem.getMessage().getText();
-		System.out.println( "YOOO AMAJFKJASKFJDKLJF " + mItem.getMessage().getText());
-		if(text.contains("is_echo")){
-			System.out.println("It's ECHOOOoooooooooO" );
-			return;
-		}
+		
 		
 		if(text.contains("postback")){
 			System.out.println("It's postback?!" +  mItem.getMessage().getText() );
-			
 		}
 		
 		
