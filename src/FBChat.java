@@ -91,10 +91,9 @@ public class FBChat extends HttpServlet {
 				
 				for (MessagingItem mItem : entry.getMessaging()) {
 					if (mItem.getMessage() != null && mItem.getMessage().getText() != null) {
-						if(mItem.getPostback() != null){
+						
 							System.out.println("JDFKSLJFKL + " +  mItem.getPostback().getPayload());
 							stateMap.put(mItem.getSender().getId(), State.BEGIN);
-						}
 						AI(mItem);
 					}
 				}
