@@ -82,10 +82,6 @@ public class FBChat extends HttpServlet {
 
 		System.out.println("POST line: " + sb);
 		
-		if(sb.toString().contains("echo")){
-			System.out.println("Echooooo");
-			return;
-		}
 
 		JsonMapper mapper = new DefaultJsonMapper();
 		WebhookObject webhookObj = mapper.toJavaObject(sb.toString(), WebhookObject.class);
